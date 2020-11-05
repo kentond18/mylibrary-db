@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { db, storage } from "../firebase";
+import { db } from "../firebase";
 import Form from "./Form";
 import Card from "./Card";
-import Button from "./Button";
 
 function Book(title, author, pages, readBook) {
 	this.key = null;
@@ -24,26 +23,6 @@ Book.info = () => {
 	);
 };
 
-let myLibrary = [];
-
-const addBookToLibrary = (title, author, pages, readBook) => {
-	db.collection("books")
-		.add({
-			title: title,
-			author: author,
-			pages: pages,
-			readBook: readBook,
-		})
-		.then((docRef) => {
-			console.log("Document writen with ID: " + docRef);
-			return true;
-		})
-		.catch((error) => {
-			console.log("Error adding document: " + error);
-			return error;
-		});
-};
-
 const App = () => {
 	const [bookCards, setBookCards] = useState(null);
 
@@ -60,14 +39,6 @@ const App = () => {
 			setBookCards(renderedCards);
 		});
 	}, []);
-
-	// addBookToLibrary("Cat in the Hat", "Dr. Seuss", 20, true);
-	// addBookToLibrary(
-	// 	"There's a Wocket in my Pocket",
-	// 	"Dr. Seuss",
-	// 	25,
-	// 	false
-	// );
 
 	return (
 		<div className="container mx-auto px-4">
