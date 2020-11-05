@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
-import config from "../config";
-import Firebase from "firebase/app";
-import "firebase/firestore";
+import { db, storage } from "../firebase";
 import Form from "./Form";
 import Card from "./Card";
 import Button from "./Button";
-
-const firebaseApp = Firebase.initializeApp(config);
-
-const db = firebaseApp.firestore().collection("books");
 
 function Book(title, author, pages, readBook) {
 	this.key = null;
@@ -54,10 +48,14 @@ const App = () => {
 	const [bookCards, setBookCards] = useState(null);
 
 	useEffect(() => {
-		db.get().then((querySnapshot) => {
-			const data = querySnapshot.docs.map((doc) => doc.data());
+		db.onSnapshot((doc) => {
+			let refs = [];
+			doc.forEach((e) => {
+				refs.push(e.id);
+			});
+			const data = doc.docs.map((doc) => doc.data());
 			const renderedCards = data.map((e, id) => {
-				return <Card cardData={e} key={id} />;
+				return <Card cardData={e} key={id} doc={refs[id]} />;
 			});
 			setBookCards(renderedCards);
 		});
@@ -76,10 +74,11 @@ const App = () => {
 			<h1 className="text-5xl md:text-6xl text-center">
 				Personal Library
 			</h1>
-			<div className="container mx-auto ">
+			<div className="flex flex-wrap">
 				<Form />
+
+				{bookCards}
 			</div>
-			<div className="inline-flex">{bookCards}</div>
 		</div>
 	);
 };
